@@ -21,4 +21,5 @@ cleanup() {
 trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
 
-./run.sh & wait $!
+# Запуск runner с правами sudo
+sudo -E ./run.sh

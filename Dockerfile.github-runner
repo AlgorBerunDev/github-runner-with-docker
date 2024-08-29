@@ -30,6 +30,10 @@ COPY start.sh .
 RUN chown github-runner:github-runner start.sh && \
     chmod +x start.sh
 
+# Установка правильных прав доступа
+RUN chown -R github-runner:github-runner /home/github-runner && \
+    chmod -R 755 /home/github-runner
+
 # Смена пользователя
 USER github-runner
 
