@@ -1,0 +1,24 @@
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "22"
+      - run: npm ci
+      - run: npm run build
+      - name: Deploy to Docker
+        run: |
+          docker build -t react-app -f Dockerfile.react .
+          docker stop react-app || true
+          docker rm react-app || true
+          docker run -d --name react-app -p 80:80 react-app
