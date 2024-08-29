@@ -1,0 +1,37 @@
+FROM ubuntu:22.04
+
+# Установка необходимых зависимостей
+RUN apt-get update && apt-get install -y \
+    curl \
+    jq \
+    git \
+    nodejs \
+    npm \
+    sudo
+
+# Установка Docker
+RUN curl -fsSL https://get.docker.com -o get-docker.sh && \
+    sh get-docker.sh
+
+# Создание пользователя для запуска runner
+RUN useradd -m github-runner && \
+    usermod -aG sudo github-runner && \
+    usermod -aG docker github-runner && \
+    echo "github-runner ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Установка GitHub Runner
+WORKDIR /home/github-runner
+RUN curl -o actions-runner-linux-x64-2.303.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.303.0/actions-runner-linux-x64-2.303.0.tar.gz && \
+    tar xzf ./actions-runner-linux-x64-2.303.0.tar.gz && \
+    rm actions-runner-linux-x64-2.303.0.tar.gz
+
+# Копирование скрипта запуска
+COPY start.sh .
+RUN chown github-runner:github-runner start.sh && \
+    chmod +x start.sh
+
+# Смена пользователя
+USER github-runner
+
+# Запуск runner
+CMD ["./start.sh"]

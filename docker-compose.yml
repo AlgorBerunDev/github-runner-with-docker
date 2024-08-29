@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  github-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.github-runner
+    environment:
+      - GITHUB_ORGANIZATION=${GITHUB_ORGANIZATION}
+      - GITHUB_REPO=${GITHUB_REPO}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    ports:
+      - "80:80"
+    restart: always
