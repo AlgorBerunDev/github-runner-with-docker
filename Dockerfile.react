@@ -1,14 +1,22 @@
 # Этап сборки
-FROM node:20 as build
+FROM node:16 as build
 
 WORKDIR /app
 
 # Копирование файлов package.json и package-lock.json
 COPY package*.json ./
 
-# Установка зависимостей, включая TypeScript
-RUN npm ci
-RUN npm install -g typescript
+# Установка зависимостей
+# Вариант 1: Игнорирование SSL
+RUN npm config set strict-ssl false
+RUN npm ci --unsafe-perm
+
+# Вариант 2: Использование альтернативного реестра
+# RUN npm config set registry http://registry.npmjs.org/
+# RUN npm ci --unsafe-perm
+
+# Вариант 3: Установка сертификатов (раскомментируйте, если нужно)
+# RUN apt-get update && apt-get install -y ca-certificates
 
 # Копирование исходного кода
 COPY . .
